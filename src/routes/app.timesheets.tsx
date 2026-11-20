@@ -71,7 +71,7 @@ function Page() {
         {[["Total Hours", weekTotal(w.days).toFixed(2)], ["Overtime", w.days.reduce((s, d) => s + d.overtime, 0).toFixed(2)], ["Miles", String(weekMiles(w.days))], ["Mileage $", (weekMiles(w.days) * MILE_RATE).toFixed(2)]].map(([k, v]) => <div key={k} className="rounded border bg-card p-3"><div className="text-xs text-muted-foreground">{k}</div><div className="text-lg font-semibold">{v}</div></div>)}
       </div>
       {step === 0 && <>
-        {!locked && <div className="flex flex-wrap gap-2"><Button size="sm" variant="outline" onClick={fillStd}><Wand2 className="mr-1 h-4 w-4" />Fill standard week</Button><Button size="sm" variant="outline" onClick={copyMon}><Copy className="mr-1 h-4 w-4" />Copy Monday to Tue–Fri</Button><Button size="sm" variant="ghost" onClick={clearAll}><Eraser className="mr-1 h-4 w-4" />Clear</Button></div>}
+        {!locked && <div className="flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-xs font-medium text-muted-foreground">Quick fill</span><Button size="sm" variant="secondary" className="h-8 shrink-0 rounded-full" onClick={fillStd}><Wand2 className="mr-1 h-3.5 w-3.5" />8h Mon–Fri</Button><Button size="sm" variant="secondary" className="h-8 shrink-0 rounded-full" onClick={copyMon}><Copy className="mr-1 h-3.5 w-3.5" />Copy Mon</Button><Button size="sm" variant="ghost" className="h-8 shrink-0 rounded-full" onClick={clearAll}><Eraser className="mr-1 h-3.5 w-3.5" />Clear</Button></div>}
         <TimesheetGrid days={w.days} onChange={(days) => update({ days })} readOnly={locked} header={header} />
         <CategorySummary days={w.days} />
       </>}

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PageHeader, StatusBadge } from "@/components/StatusBadge";
-import { TimesheetGrid, CategorySummary } from "@/components/TimesheetGrid";
+import { TimesheetGrid, CategorySummary, MileageGrid } from "@/components/TimesheetGrid";
 import { SHEETS, type Sheet } from "@/lib/timesheetData";
 
 export const Route = createFileRoute("/app/timesheet-management")({
@@ -40,7 +40,7 @@ function Page() {
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
         <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl">
           <DialogHeader><DialogTitle>Review – {open?.employee}</DialogTitle></DialogHeader>
-          {open && <><TimesheetGrid days={open.days} readOnly header={{ employee: open.employee, id: open.empId, client: open.client, location: "", period: open.period }} /><CategorySummary days={open.days} />
+          {open && <><TimesheetGrid days={open.days} readOnly header={{ employee: open.employee, id: open.empId, client: open.client, location: "", period: open.period }} /><MileageGrid days={open.days} readOnly /><CategorySummary days={open.days} />
             <Textarea placeholder="Reviewer comments (required for reject / changes)" value={note} onChange={(e) => setNote(e.target.value)} /></>}
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => note ? act("Changes Requested") : toast.error("Add a comment first")}><MessageSquare className="mr-1 h-4 w-4" />Request Changes</Button>

@@ -1,4 +1,4 @@
-import { CATS, CAT_LABELS, dailyTotal, catTotal, weekTotal, type Day } from "@/lib/timesheet";
+import { CATS, CAT_LABELS, dailyTotal, catTotal, weekTotal, weekMiles, MILE_RATE, type Day } from "@/lib/timesheet";
 import { Input } from "@/components/ui/input";
 
 export function TimesheetGrid({ days, onChange, readOnly, header }: { days: Day[]; onChange?: (d: Day[]) => void; readOnly?: boolean; header: { employee: string; id: string; client: string; location: string; period: string } }) {
@@ -57,6 +57,28 @@ export function CategorySummary({ days }: { days: Day[] }) {
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
       {CATS.map((c) => <div key={c} className="rounded border bg-card p-3"><div className="text-xs text-muted-foreground">{CAT_LABELS[c]}</div><div className="text-lg font-semibold">{catTotal(days, c).toFixed(2)}</div></div>)}
       <div className="rounded border border-primary bg-primary p-3 text-primary-foreground"><div className="text-xs opacity-80">Total Hours</div><div className="text-lg font-semibold">{weekTotal(days).toFixed(2)}</div></div>
+    </div>
+  );
+}
+
+export function MileageGrid({ days, onChange, readOnly }: { days: Day[]; onChange?: (d: Day[]) => void; readOnly?: boolean }) {
+  const set = (i: number, k: "miles" | "trip", v: string) => onChange?.(days.map((d, j) => (j === i ? { ...d, [k]: k === "trip" ? v : Math.max(0, Math.min(1000, parseFloat(v) || 0)) } : d)));
+  const total = weekMiles(days);
+  return (
+    <div className="overflow-hidden rounded border bg-card">
+      <div className="flex items-center justify-between bg-primary px-4 py-2.5 text-primary-foreground"><span className="text-sm font-semibold tracking-wide">WEEKLY MILEAGE</span><span className="text-xs opacity-80">Rate ${MILE_RATE.toFixed(2)}/mi</span></div>
+      <div className="divide-y">
+        {days.map((d, i) => (
+          <div key={d.day} className={`grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-2 px-3 py-2 sm:grid-cols-[8rem_7rem_minmax(0,1fr)] ${i % 2 === 0 ? "bg-sheet-row" : ""}`}>
+            <div className="min-w-0"><div className="text-sm font-medium">{d.day.slice(0, 3)}<span className="hidden sm:inline">{d.day.slice(3)}</span></div><div className="text-[11px] text-muted-foreground">{d.date.slice(5)}</div></div>
+            {readOnly ? <div className="text-sm font-semibold sm:text-center">{d.miles ? `${d.miles} mi` : "–"}</div> :
+              <div className="relative"><Input type="number" inputMode="decimal" step="0.1" min={0} value={d.miles || ""} placeholder="0" onChange={(e) => set(i, "miles", e.target.value)} className="h-9 bg-card pr-8 text-right" /><span className="absolute right-2.5 top-2.5 text-xs text-muted-foreground">mi</span></div>}
+            {readOnly ? <div className="col-span-2 truncate text-xs text-muted-foreground sm:col-span-1">{d.trip}</div> :
+              <Input value={d.trip} onChange={(e) => set(i, "trip", e.target.value)} placeholder="From → To / purpose" className="col-span-2 h-9 bg-card sm:col-span-1" />}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"><span>Total {total} mi</span><span>Reimbursement ${(total * MILE_RATE).toFixed(2)}</span></div>
     </div>
   );
 }
